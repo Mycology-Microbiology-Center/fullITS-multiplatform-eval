@@ -22,6 +22,7 @@ check_availability() {
 check_availability "seqkit"
 check_availability "cutadapt"
 check_availability "vsearch"
+check_availability "seqtk"
 check_availability "samtools"
 check_availability "minimap2"
 check_availability "freebayes"
