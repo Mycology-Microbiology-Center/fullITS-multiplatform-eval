@@ -34,6 +34,51 @@ DORADO_MODELS_DIR="doradoModels"
 DEVIDER_PRESET="nanopore-r10"
 
 
+## --- Usage information
+
+usage() {
+    cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+OPTIONS:
+  Cutadapt parameters:
+    --cutadapt-error-rate FLOAT       Error rate for primer matching (default: $CUTADAPT_ERROR_RATE)
+    --cutadapt-overlap INT            Minimum overlap for primer detection (default: $CUTADAPT_OVERLAP)
+    --cutadapt-min-length INT         Minimum length after trimming (default: $CUTADAPT_MIN_LENGTH)
+
+  Clustering parameters:
+    --cluster-id-first FLOAT          Identity threshold for first clustering (default: $CLUSTER_ID_FIRST)
+    --cluster-id-second FLOAT         Identity threshold for second clustering (default: $CLUSTER_ID_SECOND)
+    --min-cluster-size INT            Minimum reads per cluster (default: $MIN_CLUSTER_SIZE)
+
+  Sampling parameters:
+    --max-reads-consensus INT         Maximum reads for consensus generation (default: $MAX_READS_CONSENSUS)
+    --reads-for-polishing INT         Reads to use for polishing (default: $READS_FOR_POLISHING)
+
+  Variant calling parameters:
+    --variant-quality-threshold INT   Minimum quality score for SNPs (default: $VARIANT_QUALITY_THRESHOLD)
+    --min-coverage INT                Minimum coverage for variants (default: $MIN_COVERAGE)
+    --read-length-filter FLOAT        Fraction of consensus length for filtering (default: $READ_LENGTH_FILTER)
+
+  Directory and file paths:
+    --reads-dir PATH                  Directory containing input reads (default: $READS_DIR)
+    --primers-file PATH               Primers FASTA file (default: $PRIMERS_FILE)
+    --bc-genes-file PATH              Barcode genes configuration file (default: $BC_GENES_FILE)
+    --dorado-models-dir PATH          Dorado models directory (default: $DORADO_MODELS_DIR)
+
+  Devider parameters:
+    --devider-preset STRING           Devider preset (default: $DEVIDER_PRESET)
+
+  Other:
+    --threads INT                     Number of CPU threads for tools (default: $THREADS)
+    -h, --help                        Display this help message and exit
+
+EOF
+    exit 1
+}
+
+
+
 
 ## --- Validation
 
