@@ -42,7 +42,7 @@ echo "Validating dependencies..."
 check_availability() {
   local tool="$1"
   if ! command -v "$tool" >/dev/null 2>&1; then
-      echo "  \033[31mERROR: $tool is not installed\033[0m" >&2
+      echo -e "  \033[31mERROR: $tool is not installed\033[0m" >&2
       exit 1
   fi
 }
@@ -57,7 +57,7 @@ check_availability "freebayes"
 check_availability "dorado"
 check_availability "abpoa"
 check_availability "devider"
-echo "  \033[32mAll dependencies are installed\033[0m" >&2
+echo -e "  \033[32mAll dependencies are installed\033[0m" >&2
 
 
 
