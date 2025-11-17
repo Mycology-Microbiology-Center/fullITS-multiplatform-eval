@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Multithreading (e.g., for cutadapt, devider, minimap2, etc.)
+THREADS=4
+
 
 echo "Validating dependencies..."
 
@@ -44,7 +47,7 @@ do echo "Filtering reads of $b according to minimum and maximum length specified
   --untrimmed-output ../nonTargetAmp/$b.fq \
   --overlap 15 \
   --minimum-length 400 \
-  --cores 3 \
+  --cores $THREADS \
   -o {name}.fq \
   ../np_out.fq
   find -name "*.fq" -type 'f' -empty -delete
@@ -169,7 +172,7 @@ echo "Polishing and variant calling"
      if (($(samtools view -c seq.bam) < 5))
      then echo "Fewer than 5 reads for $j"
      else rlen=$(seqkit stats -T specimen_reads/$j.fas | cut -f5 | tail -n+2 | awk '{print int($1*0.9)}') # getting 90% of consensus sequence length to filter out too short reads after mapping
-          minimap2 -a --sam-hit-only -x map-ont --secondary=no -t 1 specimen_reads/$j.fas specimen_reads/$j.reads.fq | samtools sort | samtools view -e "rlen>=$rlen" -O BAM > alignment.bam # $rlen works only with double quotes in samtools view -e
+         minimap2 -a --sam-hit-only -x map-ont --secondary=no -t $THREADS specimen_reads/$j.fas specimen_reads/$j.reads.fq | samtools sort | samtools view -e "rlen>=$rlen" -O BAM > alignment.bam # $rlen works only with double quotes in samtools view -e
           samtools index alignment.bam
           samtools faidx specimen_reads/$j.fas
           freebayes -i --haplotype-length -1 -f specimen_reads/$j.fas alignment.bam > var.vcf # variant calling
@@ -239,7 +242,7 @@ echo "Polishing and variant calling"
        --untrimmed-output primersNotCut.fasta \
        --overlap 15 \
        --minimum-length 400 \
-       --cores 3 \
+       --cores $THREADS \
        -o noPrimers.fasta \
        withPrimers.fasta
        find -name "*.fasta" -type 'f' -empty -delete
