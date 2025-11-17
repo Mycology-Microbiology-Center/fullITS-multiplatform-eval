@@ -88,6 +88,34 @@ shopt -u nullglob
 
 
 
+## --- Show specified parameters
+
+echo "Configuration:"
+echo "  CPU threads: $THREADS"
+echo "  Cutadapt:"
+echo "    Error rate: $CUTADAPT_ERROR_RATE"
+echo "    Overlap:    $CUTADAPT_OVERLAP"
+echo "    Min length: $CUTADAPT_MIN_LENGTH"
+echo "  Clustering:"
+echo "    First round ID:   $CLUSTER_ID_FIRST"
+echo "    Second round ID:  $CLUSTER_ID_SECOND"
+echo "    Min cluster size: $MIN_CLUSTER_SIZE"
+echo "  Sampling:"
+echo "    Max reads for consensus: $MAX_READS_CONSENSUS"
+echo "    Reads for polishing:     $READS_FOR_POLISHING"
+echo "  Variant calling:"
+echo "    Quality threshold:  $VARIANT_QUALITY_THRESHOLD"
+echo "    Min coverage:       $MIN_COVERAGE"
+echo "    Read length filter: $READ_LENGTH_FILTER"
+echo "  Paths:"
+echo "    Reads directory: $READS_DIR"
+echo "    Primers file:    $PRIMERS_FILE"
+echo "    BC genes file:   $BC_GENES_FILE"
+echo "    Dorado models:   $DORADO_MODELS_DIR"
+echo ""
+
+
+
 
 ## --- Main pipeline
 
