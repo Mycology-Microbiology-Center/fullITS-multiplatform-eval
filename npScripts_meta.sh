@@ -60,6 +60,34 @@ check_availability "devider"
 echo -e "  \033[32mAll dependencies are installed\033[0m" >&2
 
 
+if [ ! -f $PRIMERS_FILE ]; then
+  echo -e "  \033[31mERROR: $PRIMERS_FILE file not found\033[0m" >&2
+  exit 1
+fi
+if [ ! -f $BC_GENES_FILE ]; then
+  echo -e "  \033[31mERROR: $BC_GENES_FILE file not found\033[0m" >&2
+  exit 1
+fi
+if [ ! -f $DORADO_MODELS_DIR ]; then
+  echo -e "  \033[31mERROR: $DORADO_MODELS_DIR directory not found\033[0m" >&2
+  exit 1
+fi
+if [ ! -d "$READS_DIR" ]; then
+  echo -e "  \033[31mERROR: $READS_DIR directory not found\033[0m" >&2
+  exit 1
+fi
+
+# Check for at least one *.fastq.gz file in $READS_DIR
+shopt -s nullglob
+fastq_files=("$READS_DIR"/*.fastq.gz)
+if [ ${#fastq_files[@]} -eq 0 ]; then
+  echo -e "  \033[31mERROR: No .fastq.gz files found in $READS_DIR\033[0m" >&2
+  exit 1
+fi
+shopt -u nullglob
+
+
+
 
 ## --- Main pipeline
 
