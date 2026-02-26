@@ -279,7 +279,7 @@ do echo "Filtering reads of $b according to minimum and maximum length specified
   seqkit seq -m $(awk 'min>$2 || NR==1{min=$2} END{print min}' $BC_GENES_FILE) -M $(awk 'max<$3 || NR==1{max=$3} END{print max}' $BC_GENES_FILE) $READS_DIR/$b.fastq.gz | 
   seqkit replace -p "\s.+" > np_out.fq
   cd vsearch
-  rm *
+  find . -type f -name "*" -delete
   echo "Classifying reads according to primers"
   cutadapt \
   -g file:../$PRIMERS_FILE \
