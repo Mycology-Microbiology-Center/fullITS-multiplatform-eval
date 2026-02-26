@@ -395,6 +395,7 @@ done
                   seqkit seq -n specimen_reads/$toMerge.reads.fq > IDs.txt
                   samtools view -N IDs.txt $READS_DIR/$(echo $j | grep -wo -f bcSpecimens_all.txt).bam -O BAM -o specimen_reads/$toMerge.reads.bam
                   rm cons/*.fq
+                  rm -f ./mv.sh
                done < clusters/$j.IDs.txt
             done
   fi
@@ -407,6 +408,7 @@ done
   cd ..
   chmod +x mv.sh
   ./mv.sh
+  rm -f ./mv.sh
 #
 echo "Polishing and variant calling"
   for j in $(ls specimen_reads/*.fas | sed 's/.fas//' | sed 's/specimen_reads\///')
