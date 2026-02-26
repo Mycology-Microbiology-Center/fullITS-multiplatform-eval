@@ -206,8 +206,9 @@ if [ ! -f $BC_GENES_FILE ]; then
   echo -e "  \033[31mERROR: $BC_GENES_FILE file not found\033[0m" >&2
   exit 1
 fi
-if [ ! -f $DORADO_MODELS_DIR ]; then
+if [ ! -d "$DORADO_MODELS_DIR" ]; then
   echo -e "  \033[31mERROR: $DORADO_MODELS_DIR directory not found\033[0m" >&2
+  echo -e "  \033[31mYou may specify a path to the directory with dorado models using --dorado-models-dir option\033[0m" >&2
   exit 1
 fi
 if [ ! -d "$READS_DIR" ]; then
