@@ -216,11 +216,24 @@ if [ ! -d "$READS_DIR" ]; then
   exit 1
 fi
 
-# Check for at least one *.fastq.gz file in $READS_DIR
+# Check for at least one *.fastq.gz file in $READS_DIR and that each has a matching .bam
 shopt -s nullglob
 fastq_files=("$READS_DIR"/*.fastq.gz)
 if [ ${#fastq_files[@]} -eq 0 ]; then
   echo -e "  \033[31mERROR: No .fastq.gz files found in $READS_DIR\033[0m" >&2
+  exit 1
+fi
+echo -e "  \033[32mFound ${#fastq_files[@]} .fastq.gz file(s) in $READS_DIR\033[0m" >&2
+missing_bam=()
+for f in "${fastq_files[@]}"; do
+  base=$(basename "$f" .fastq.gz)
+  if [ ! -f "$READS_DIR/$base.bam" ]; then
+    missing_bam+=("$base.bam")
+  fi
+done
+if [ ${#missing_bam[@]} -gt 0 ]; then
+  echo -e "  \033[31mERROR: Each .fastq.gz must have a matching .bam in $READS_DIR. Missing:\033[0m" >&2
+  printf '    %s\n' "${missing_bam[@]}" >&2
   exit 1
 fi
 shopt -u nullglob
