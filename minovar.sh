@@ -271,9 +271,7 @@ mkdir -p cons
 
 seqkit seq -n $PRIMERS_FILE > gIDs.txt
 ls $READS_DIR/*.fastq.gz | sed 's/.fastq.gz//' | sed "s|$READS_DIR/||" > bcSpecimens_all.txt
-#doradoModel=dna_r10.4.1_e8.2_400bps_sup@v5.2.0_polish_rl_mv
-#mkdir doradoModels
-#dorado download --model $doradoModel --models-directory $DORADO_MODELS_DIR
+
 for b in $(ls $READS_DIR/*.fastq.gz | sed 's/.fastq.gz//' | sed "s|$READS_DIR/||")
 do echo "Filtering reads of $b according to minimum and maximum length specified in the file $BC_GENES_FILE and sorting by average read quality in descending order"
   seqkit seq --quiet -m $(awk 'min>$2 || NR==1{min=$2} END{print min}' $BC_GENES_FILE) -M $(awk 'max<$3 || NR==1{max=$3} END{print max}' $BC_GENES_FILE) $READS_DIR/$b.fastq.gz | 
