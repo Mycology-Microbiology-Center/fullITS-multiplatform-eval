@@ -316,7 +316,7 @@ if (($(ls *.fq | grep -f ../gIDs.txt | wc -l) < 1))
           seqkit seq -n $j > $b.$k.$j.txt
           fi
         done
-        rm vcluster*
+        find . -type f -name "vcluster*" -delete
         echo "Second round of clustering of $b $k clusters"
         seqkit seq --quiet -m $(grep $k -w ../$BC_GENES_FILE | cut -f2) $k.fas > filt.fas # filtering out sequences too short for the gene
         if (($(grep -c ">" filt.fas) < 1))
@@ -402,8 +402,8 @@ echo "Polishing and variant calling"
   do echo "Consensus sequence polishing of $j"
      seqtk sample -s$(echo $RANDOM) specimen_reads/$j.reads.fq $READS_FOR_POLISHING | seqkit seq -n > IDs.txt # taking READS_FOR_POLISHING random reads for consensus polishing
      samtools view -N IDs.txt specimen_reads/$j.reads.bam -O BAM -o seq.bam
-     rm *.bai
-     rm *.fai
+     find . -type f -name "*.bai" -delete
+     find . -type f -name "*.fai" -delete
      cp specimen_reads/$j.fas cons.fa # dorado polish accepts only *.fasta or *.fa extensions, not *.fas
      samtools faidx cons.fa
      dorado aligner cons.fa seq.bam | samtools sort > alignment.bam
@@ -443,8 +443,8 @@ echo "Polishing and variant calling"
                   seqkit replace -p $(seqkit seq -n constemp.fas) -r $j.$(echo $v | sed 's/Haplotype://') constemp.fas > cons.fa # renaming consensus sequence of the variant # dorado polish accepts only *.fasta or *.fa extensions, not *.fas
                   seqtk sample -s$(echo $RANDOM) specimen_reads/$j.$(echo $v | sed 's/Haplotype://').reads.fq $READS_FOR_POLISHING | seqkit seq -n > IDs.txt
                   samtools view -N IDs.txt specimen_reads/$j.reads.bam -O BAM -o seq.bam
-                  rm *.bai
-                  rm *.fai
+                  find . -type f -name "*.bai" -delete
+                  find . -type f -name "*.fai" -delete
                   samtools faidx cons.fa
                   dorado aligner cons.fa seq.bam | samtools sort > alignment.bam
                   samtools index alignment.bam
@@ -459,7 +459,7 @@ echo "Polishing and variant calling"
 #
   echo "Collecting same amplicon single variant sequences into one file in the folder bcCons"
   cd specimen_reads
-  rm *.fai
+  find . -type f -name "*.fai" -delete
   if (($(ls *.fas | grep -f ../gIDs.txt -o | wc -l) < 1))
   then echo "No single variant sequences"
   else 
@@ -508,7 +508,7 @@ echo "Polishing and variant calling"
               ./mv.sh
               toMerge=$(echo $line | sed 's/ /\t/' | cut -f2 | sed 's/, /\n/g' | head -n1)
               cat ../cons/*.fq > ../specimen_reads/$toMerge.reads.fq
-              rm ../cons/*.fq
+              find ../cons -type f -name "*.fq" -delete
            done < $i.IDs.txt
          done
   fi
