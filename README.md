@@ -104,8 +104,11 @@ conda activate Minovar
 
 > [!NOTE]
 > ```
-> In addition to `bcGenes.txt` and `primers.fas`, the pipeline expects input data (`fastq.gz` files that can have move tables for Dorado polishing) in the `reads` subdirectory, and dorado models in the `doradoModels` subdirectory of the current working directory.
-> Input `fastq.gz` file sequence identifier line has to include basecalling model for dorado polishing (which is for example added with --emit-fastq flag with dorado basecaller).
+> In addition to `bcGenes.txt` and `primers.fas`, the pipeline expects input data
+> (`fastq.gz` files that can have move tables for Dorado polishing) in the `reads` subdirectory,
+> and dorado models in the `doradoModels` subdirectory of the current working directory.
+> Input `fastq.gz` file sequence identifier line has to include basecalling model for dorado polishing
+> (which is for example added with --emit-fastq flag with dorado basecaller).
 > 
 > If basecaller model is missing, it can be added in the following form.
 > 
