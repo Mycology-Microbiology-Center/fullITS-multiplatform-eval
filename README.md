@@ -106,14 +106,20 @@ conda activate Minovar
 > In addition to `bcGenes.txt` and `primers.fas`, 
 > the pipeline expects input data (`fastq.gz` files that can have move tables for Dorado polishing)
 > in the `reads` subdirectory, and dorado models in the `doradoModels` subdirectory
-> of the current working directory. 
+> of the current working directory.
+> 
 > Input `fastq.gz` file sequence identifier line has to include basecalling model
 > (which is for example added with --emit-fastq flag with dorado basecaller).
+> 
 > If basecaller model is missing, it can be added in the following form.
 > Original sequence identifier:
+> 
 > @sequenceID
+> 
 > New sequence identifier:
+> 
 > @sequenceID RG:Z:-_dna_r10.4.1_e8.2_400bps_sup@v4.3.0
+> 
 > Sequence identifier and basecalling model can be separated by space or tab
 
 To use customized parameters, run the script with the desired parameters. For example:
