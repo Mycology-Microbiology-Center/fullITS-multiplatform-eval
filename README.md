@@ -149,11 +149,11 @@ conda activate Minovar
 
 ## PRONAME
 
-The analysis of ONT sequencing data was also performed using the PRONAME pipeline. It consists of four main scripts ((i) `proname_import`, (ii) `proname_filter`, (iii) `proname_refine` and (iv) `proname_taxonomy`), but only the first three were used here, as the taxonomic assignment step was performed outside PRONAME in order to standardize the procedure across datasets from all sequencing platforms.
+The analysis of ONT sequencing data was also performed using the [PRONAME](https://github.com/benn888/PRONAME) pipeline. It consists of four main scripts ((i) `proname_import`, (ii) `proname_filter`, (iii) `proname_refine` and (iv) `proname_taxonomy`), but only the first three were used here, as the taxonomic assignment step was performed outside PRONAME in order to standardize the procedure across datasets from all sequencing platforms.
 
 First, demultiplexed FASTQ sequencing files, placed in the `RawData` folder, were imported into PRONAME v2.2.0:
 
-```
+```bash
 proname_import \
   --inputpath RawData \
   --duplex no \
@@ -165,7 +165,7 @@ proname_import \
 
 Low-quality reads were then discarded by retaining only reads ranging from 450 to 3000 bp with a Phred score of at least 15:
 
-```
+```bash
 proname_filter \
   --datatype simplex \
   --filtminlen 450 \
@@ -176,9 +176,9 @@ proname_filter \
   --plotformat html
 ```
 
-The core of the analysis was then performed using `proname_refine` to cluster reads according to a 98% identity threshold and remove singletons, followed by an error-correction step using dorado polish. The `proname_refine` script was slightly modified to deactivate the chimera detection, as this step was performed at a later stage for all datasets.
+The core of the analysis was then performed using `proname_refine` to cluster reads according to a 98% identity threshold and remove singletons, followed by an error-correction step using `dorado polish`. The `proname_refine` script was slightly modified to deactivate the chimera detection, as this step was performed at a later stage for all datasets.
 
-```
+```bash
 proname_refine \
   --clusterid 0.98 \
   --clusterthreads 48 \
@@ -192,7 +192,7 @@ proname_refine \
 
 Full-length ITS regions were then extracted using ITSx and an updated hidden Markov model (HMM) profile database:
 
-```
+```bash
 docker run --rm -v "$PWD":/data vmikk/nextits:1.1.0 \
   ITSx -i /data/rep_seqs.fasta -o /data/ITSx_extracted \
       --complement T \
@@ -208,7 +208,7 @@ docker run --rm -v "$PWD":/data vmikk/nextits:1.1.0 \
 
 The abundance table was then filtered accordingly, and ITS-extracted sequences were dereplicated:
 
-```
+```bash
 # Filtering out from abundance table (rep_table.tsv) the sequences that were discarded during ITS extraction
 grep "^>" ITSx_extracted.full.fasta | sed 's/^>//' > ids_kept.txt
 
