@@ -147,3 +147,114 @@ conda activate Minovar
 ./minovar.sh --help
 ```
 
+## PRONAME
+
+The analysis of ONT sequencing data was also performed using the PRONAME pipeline. It consists of four main scripts ((i) `proname_import`, (ii) `proname_filter`, (iii) `proname_refine` and (iv) `proname_taxonomy`), but only the first three were used here, as the taxonomic assignment step was performed outside PRONAME in order to standardize the procedure across datasets from all sequencing platforms.
+
+First, demultiplexed FASTQ sequencing files, placed in the `RawData` folder, were imported into PRONAME v2.2.0:
+
+```
+proname_import \
+  --inputpath RawData \
+  --duplex no \
+  --trimadapters no \
+  --trimprimers no \
+  --threads 48 \
+  --plotformat html
+```
+
+Low-quality reads were then discarded by retaining only reads ranging from 450 to 3000 bp with a Phred score of at least 15:
+
+```
+proname_filter \
+  --datatype simplex \
+  --filtminlen 450 \
+  --filtmaxlen 3000 \
+  --filtminqual 15 \
+  --inputpath RawData \
+  --threads 48 \
+  --plotformat html
+```
+
+The core of the analysis was then performed using `proname_refine` to cluster reads according to a 98% identity threshold and remove singletons, followed by an error-correction step using dorado polish. The `proname_refine` script was slightly modified to deactivate the chimera detection, as this step was performed at a later stage for all datasets.
+
+```
+proname_refine \
+  --clusterid 0.98 \
+  --clusterthreads 48 \
+  --inputpath RawData \
+  --minreadspercluster 2 \
+  --polisher dorado \
+  --polisherthreads 48 \
+  --chimeramethod denovo \
+  --qiime2import no
+```
+
+Full-length ITS regions were then extracted using ITSx and an updated hidden Markov model (HMM) profile database:
+
+```
+docker run --rm -v "$PWD":/data vmikk/nextits:1.1.0 \
+  ITSx -i /data/rep_seqs.fasta -o /data/ITSx_extracted \
+      --complement T \
+      --save_regions all \
+      --positions T \
+      --not_found T \
+      -E 0.1 \
+      -t all \
+      --partial 0 \
+      --cpu 48 \
+      --preserve T
+```
+
+The abundance table was then filtered accordingly, and ITS-extracted sequences were dereplicated:
+
+```
+# Filtering out from abundance table (rep_table.tsv) the sequences that were discarded during ITS extraction
+grep "^>" ITSx_extracted.full.fasta | sed 's/^>//' > ids_kept.txt
+
+awk -F'\t' 'FNR==NR { gsub(/\r/,"",$1); keep[$1]; next } FNR==1 || ($1 in keep)' \
+  ids_kept.txt rep_table.tsv > ITSx_extracted_rep_table.tsv
+
+rm ids_kept.txt
+
+mv ITSx_extracted.full.fasta ITSx_extracted_rep_seqs.fasta
+
+
+# Dereplicating ITS extracted sequences
+vsearch \
+  --derep_fulllength ITSx_extracted_rep_seqs.fasta \
+  --strand both \
+  --fasta_width 0 \
+  --uc ITSx_extracted_rep_seqs.derep.uc \
+  --output ITSx_extracted_rep_seqs.derep.fasta \
+  --threads 48
+
+
+# Dereplicating the abundance table accordingly
+awk -F'\t' '
+  BEGIN{ OFS="\t" }
+  FNR==NR {
+    gsub(/\r/,"")
+    # S: centroid -> itself ; H: query -> centroid
+    if ($1=="S") { q=$(NF-1); map[q]=q }
+    else if ($1=="H") { q=$(NF-1); t=$NF; map[q]=t }
+    next
+  }
+  FNR==1 { header=$0; ncol=NF; next }
+  {
+    id=$1
+    c = (id in map) ? map[id] : id
+    if (!(c in seen)) { order[++m]=c; seen[c]=1 }
+    for (i=2; i<=ncol; i++) sum[c,i] += $i+0
+  }
+  END {
+    print header
+    for (k=1; k<=m; k++) {
+      c = order[k]
+      printf "%s", c
+      for (i=2; i<=ncol; i++) printf OFS "%d", sum[c,i]
+      printf "\n"
+    }
+  }
+' ITSx_extracted_rep_seqs.derep.uc ITSx_extracted_rep_table.tsv > ITSx_extracted_rep_table.derep.tsv
+```
