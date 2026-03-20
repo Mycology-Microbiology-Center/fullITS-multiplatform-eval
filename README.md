@@ -1,4 +1,5 @@
-# Benchmarking full-length ITS metabarcoding across Illumina 2x500, PacBio, and Oxford Nanopore sequencing using mock and soil communities
+# Benchmarking full-length ITS metabarcoding across Illumina 2x500, PacBio, and Oxford Nanopore sequencing using mock and soil communities  [<img src='assets/MycologyMicrobiologyCenter_logo.png' align="right" height="100" alt="Mycology and Microbiology Center">](https://mmc.ut.ee/?lang=en)
+
 
 ## Contents
 
