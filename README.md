@@ -1,5 +1,4 @@
-# fullITS-multiplatform-eval
-Benchmarking Nanopore, PacBio, and Illumina 2×500 for eukaryotic full-length ITS amplicon sequencing
+# Benchmarking full-length ITS metabarcoding across Illumina 2x500, PacBio, and Oxford Nanopore sequencing using mock and soil communities
 
 ## Minovar
 
