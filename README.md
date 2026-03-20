@@ -6,6 +6,9 @@
 - [PRONAME](#proname)
 - [NextITS](#nextits)
 
+## Raw sequencing data
+
+Raw reads from all three platforms are available at the European Nucleotide Archive (ENA) under project accession [PRJEB108994](https://www.ebi.ac.uk/ena/browser/view/PRJEB108994) (samples ERS29406352-ERS29406397; sequence accessions ERR16773363-ERR16773639).
 
 ## Minovar
 
