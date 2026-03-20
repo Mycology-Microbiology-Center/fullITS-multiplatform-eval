@@ -1,5 +1,12 @@
 # Benchmarking full-length ITS metabarcoding across Illumina 2x500, PacBio, and Oxford Nanopore sequencing using mock and soil communities
 
+## Contents
+
+- [Minovar](#minovar)
+- [PRONAME](#proname)
+- [NextITS](#nextits)
+
+
 ## Minovar
 
 The script produces polished consensus variant sequences from nanopore reads of amplicons.
