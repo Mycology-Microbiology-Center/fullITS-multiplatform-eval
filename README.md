@@ -274,7 +274,7 @@ awk -F'\t' '
 
 ### Step-1
 
-Standard settings (LIMA minimum score 85, full ITS, reference-based chimera checking with a EUKARYOME-compatible USEARCH UDB):
+Standard settings:
 
 ```bash
 INPUT_FASTQ="/path/to/run/*.fastq.gz"
