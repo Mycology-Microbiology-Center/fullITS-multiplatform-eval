@@ -258,3 +258,99 @@ awk -F'\t' '
   }
 ' ITSx_extracted_rep_seqs.derep.uc ITSx_extracted_rep_table.tsv > ITSx_extracted_rep_table.derep.tsv
 ```
+
+## NextITS
+
+[NextITS](https://github.com/vmikk/NextITS) v1.1.0 ([Zenodo](https://doi.org/10.5281/zenodo.15074882)) was run with Nextflow. It was applied to PacBio HiFi reads and to Illumina reads after demultiplexing, paired-end merging, and primer trimming, using the same NextITS settings as for PacBio. Step-1 performs QC (including LIMA demultiplexing for PacBio). Step-2 pools Step-1 outputs and clusters sequences. Full pipeline options, container profiles, and HPC notes are available in the [NextITS documentation](https://next-ITS.github.io/).
+
+### Step-1
+
+Standard settings (LIMA minimum score 85, full ITS, reference-based chimera checking with a EUKARYOME-compatible USEARCH UDB):
+
+```bash
+INPUT_FASTQ="/path/to/run/*.fastq.gz"
+BARCODES_FASTA="/path/to/run/*_barcodes.fasta"
+CHIMERA_DB="/path/to/Eukaryome_1.9.3_241222_FullITS_100-800.udb"
+OUTDIR_STEP1="$(pwd)/Step1_Results/PACBvs"
+WORK_DIR_STEP1="$(pwd)/Step1_work/PACBvs"
+mkdir -p "$OUTDIR_STEP1" "$WORK_DIR_STEP1"
+
+export NXF_OPTS="-Xms500M -Xmx3G"
+
+nextflow run vmikk/NextITS -r main \
+  -profile singularity \
+  -resume \
+  --step     "Step1" \
+  --input    "$INPUT_FASTQ" \
+  --barcodes "$BARCODES_FASTA" \
+  --primer_forward   GTACACACCGCCCGTCG \
+  --primer_reverse   CCTSCSCTTANTDATATGC \
+  --lima_barcodetype "dual_symmetric" \
+  --lima_minscore    85 \
+  --its_region "full" \
+  --chimera_db "$CHIMERA_DB" \
+  --outdir     "$OUTDIR_STEP1" \
+  -work-dir    "$WORK_DIR_STEP1"
+```
+
+On HPC clusters, switch to `-profile singularity,hpc`, set `NXF_SINGULARITY_CACHEDIR` if needed, and pass `-qs "$SLURM_NTASKS"` as described in the [HPC](https://next-its.github.io/HPC/) instructions.
+
+
+Minimum-features Step-1 (chimera removal, tag-jump filtering, and homopolymer correction disabled):
+
+```bash
+LABEL="PACBvs"
+INPUT_FASTQ="/path/to/${LABEL}/*.fastq.gz"
+BARCODES_FASTA="/path/to/${LABEL}/*_barcodes.fasta"
+OUTDIR_STEP1="$(pwd)/Step1_Results/${LABEL}"
+WORK_DIR_STEP1="$(pwd)/Step1_work/${LABEL}"
+mkdir -p "$OUTDIR_STEP1" "$WORK_DIR_STEP1"
+
+nextflow run vmikk/NextITS -r main \
+  -profile singularity \
+  -resume \
+  --step     "Step1" \
+  --input    "$INPUT_FASTQ" \
+  --barcodes "$BARCODES_FASTA" \
+  --primer_forward   GTACACACCGCCCGTCG \
+  --primer_reverse   CCTSCSCTTANTDATATGC \
+  --lima_barcodetype "dual_symmetric" \
+  --lima_minscore    85 \
+  --its_region "full" \
+  --chimera_methods "none" \
+  --hp false \
+  --tj false \
+  --outdir  "$OUTDIR_STEP1" \
+  -work-dir "$WORK_DIR_STEP1"
+```
+
+### Step-2 (clustering)
+
+UNOISE pre-clustering and VSEARCH clustering at 98% identity (`--data_path` is the parent directory that contains the Step-1 output folders):
+
+```bash
+DATA_PATH="$(pwd)/Step1_Results"
+OUTDIR_STEP2="$(pwd)/Step2_Results"
+WORK_DIR_STEP2="$(pwd)/Step2_work"
+mkdir -p "$OUTDIR_STEP2" "$WORK_DIR_STEP2"
+
+export NXF_OPTS="-Xms500M -Xmx2G"
+
+nextflow run vmikk/NextITS -r main \
+  -profile singularity \
+  -resume \
+  --step "Step2" \
+  --ampliconlen_min 100 \
+  --preclustering "unoise" \
+  --unoise_alpha 6.0 \
+  --unoise_minsize 1 \
+  --clustering "vsearch" \
+  --otu_id 0.98 \
+  --merge_replicates false \
+  --max_MEEP 0.6 \
+  --max_ChimeraScore 0.6 \
+  --lulu false \
+  --data_path "$DATA_PATH" \
+  --outdir    "$OUTDIR_STEP2" \
+  -work-dir   "$WORK_DIR_STEP2"
+```
