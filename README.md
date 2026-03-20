@@ -270,7 +270,7 @@ awk -F'\t' '
 
 ## NextITS
 
-[NextITS](https://github.com/vmikk/NextITS) v1.1.0 ([Zenodo](https://doi.org/10.5281/zenodo.15074882)) was run with Nextflow. It was applied to PacBio HiFi reads and to Illumina reads after demultiplexing, paired-end merging, and primer trimming, using the same NextITS settings as for PacBio. Step-1 performs QC (including LIMA demultiplexing for PacBio). Step-2 pools Step-1 outputs and clusters sequences. Full pipeline options, container profiles, and HPC notes are available in the [NextITS documentation](https://next-ITS.github.io/).
+[NextITS](https://github.com/vmikk/NextITS) v1.1.0 ([Zenodo](https://zenodo.org/records/18338109)) was run with Nextflow. It was applied to PacBio HiFi reads and to Illumina reads after demultiplexing, paired-end merging, and primer trimming, using the same NextITS settings as for PacBio. Step-1 performs QC (including LIMA demultiplexing for PacBio). Step-2 pools Step-1 outputs and clusters sequences. Full pipeline options, container profiles, and HPC notes are available in the [NextITS documentation](https://next-ITS.github.io/).
 
 ### Step-1
 
